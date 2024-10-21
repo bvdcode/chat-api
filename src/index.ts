@@ -39,8 +39,7 @@ export default {
 			}
 			return new Response(String(row.value), {
 				headers: {
-					'content-type': 'text/plain',
-					encoding: 'utf-8',
+					'content-type': 'text/plain; charset=utf-8',
 				},
 			});
 		}
