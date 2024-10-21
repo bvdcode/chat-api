@@ -32,7 +32,7 @@ export default {
 			if (!ipAddr) {
 				return new Response('No IP address header', { status: 400 });
 			}
-			await env.DB.prepare('INSERT INTO user_key_values (key, value, user_agent, ip_addr) VALUES (?, ?, ?, ?)')
+			await env.DB.prepare('INSERT INTO user_key_values (key, value, user_agent, ip_address) VALUES (?, ?, ?, ?)')
 				.bind(key, value, userAgent, ipAddr)
 				.run();
 			return new Response('OK');
