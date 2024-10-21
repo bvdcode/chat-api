@@ -55,7 +55,8 @@ export default {
 			return new Response(String(row.value), {
 				headers: {
 					'Content-Type': 'text/plain; charset=utf-8',
-					'Last-Modified': new Date(row.created_at as string).toISOString(),
+					'Last-Modified': new Date(row.created_at as string).toUTCString(),
+					'X-Created-At': new Date(row.created_at as string).toISOString(),
 				},
 			});
 		}
