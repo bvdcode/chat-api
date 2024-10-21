@@ -35,8 +35,7 @@ export default {
 
 			// 'INSERT INTO user_key_values (key, value, user_agent, ip_address) VALUES (?, ?, ?, ?)'
 			// вставить значения если их нет, иначе обновить
-			const query =
-				'INSERT INTO user_key_values (key, value, user_agent, ip_address) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value), user_agent = VALUES(user_agent), ip_address = VALUES(ip_address)';
+			const query = 'INSERT OR REPLACE INTO user_key_values (key, value, user_agent, ip_address) VALUES (?, ?, ?, ?)';
 
 			await env.DB.prepare(query).bind(key, value, userAgent, ipAddr).run();
 			return new Response('OK');
