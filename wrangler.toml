@@ -10,6 +10,11 @@ compatibility_flags = ["nodejs_compat"]
 [observability]
 enabled = true
 
+[[d1_databases]]
+binding = "DB"                                       # available in your Worker on env.DB
+database_name = "api_db"
+database_id = "dabfa2ee-fb5c-421c-a785-be36e383aa8e"
+
 # Automatically place your workloads in an optimal location to minimize latency.
 # If you are running back-end logic in a Worker, running it closer to your back-end infrastructure
 # rather than the end user may result in better performance.
