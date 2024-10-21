@@ -24,7 +24,17 @@ export default {
 			if (!key) {
 				return new Response('No key provided', { status: 400 });
 			}
-			await env.DB.prepare('INSERT INTO user_key_values (key, value) VALUES (?, ?)').bind(key, value).run();
+			const userAgent = request.headers.get('user-agent');
+			if (!userAgent) {
+				return new Response('No user-agent header', { status: 400 });
+			}
+			const ipAddr = request.headers.get('cf-connecting-ip');
+			if (!ipAddr) {
+				return new Response('No IP address header', { status: 400 });
+			}
+			await env.DB.prepare('INSERT INTO user_key_values (key, value, user_agent, ip_addr) VALUES (?, ?, ?, ?)')
+				.bind(key, value, userAgent, ipAddr)
+				.run();
 			return new Response('OK');
 		}
 
