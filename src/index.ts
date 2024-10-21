@@ -8,6 +8,7 @@ export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const url = new URL(request.url);
 		const keyValuePath = '/key-value/';
+		const valueSizeLimit = 2 * 1024 * 1024; // 2 MB
 
 		if (url.pathname.startsWith(keyValuePath) && request.method === 'POST') {
 			const key = url.pathname.slice(keyValuePath.length).trim();
@@ -18,7 +19,7 @@ export default {
 			if (key.length > 255) {
 				return new Response('Key too long', { status: 400 });
 			}
-			if (value.length > 65535) {
+			if (value.length > valueSizeLimit) {
 				return new Response('Value too long', { status: 400 });
 			}
 			if (!key) {
