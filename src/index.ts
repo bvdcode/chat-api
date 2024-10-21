@@ -46,13 +46,16 @@ export default {
 			if (!key) {
 				return new Response('No key provided', { status: 400 });
 			}
-			const row = await env.DB.prepare('SELECT value FROM user_key_values WHERE key = ?').bind(key).first();
+			const row = await env.DB.prepare('SELECT value, created_at FROM user_key_values WHERE key = ?').bind(key).first();
 			if (!row) {
 				return new Response('Not Found', { status: 404 });
 			}
+
+			// got value and created_at, return value and add created_at to response headers
 			return new Response(String(row.value), {
 				headers: {
-					'content-type': 'text/plain; charset=utf-8',
+					'Content-Type': 'text/plain; charset=utf-8',
+					'Last-Modified': new Date(row.created_at as string).toISOString(),
 				},
 			});
 		}
