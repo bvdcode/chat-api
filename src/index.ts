@@ -1,11 +1,3 @@
-// SQL history:
-//
-// CREATE TABLE user_key_values (
-//     id INT AUTO_INCREMENT PRIMARY KEY,
-//     key VARCHAR(255) NOT NULL,
-//     value TEXT NOT NULL
-// );
-
 export interface Env {
 	// If you set another name in wrangler.toml as the value for 'binding',
 	// replace "DB" with the variable name you defined.
