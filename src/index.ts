@@ -7,10 +7,10 @@ export interface Env {
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const url = new URL(request.url);
-		const keyValuePath = '/key-value';
+		const keyValuePath = '/key-value/';
 
 		if (url.pathname.startsWith(keyValuePath) && request.method === 'POST') {
-			const key = url.pathname.slice(5).trim();
+			const key = url.pathname.slice(keyValuePath.length).trim();
 			const value = await request.text();
 			if (!value) {
 				return new Response('No value provided', { status: 400 });
@@ -32,14 +32,18 @@ export default {
 			if (!ipAddr) {
 				return new Response('No IP address header', { status: 400 });
 			}
-			await env.DB.prepare('INSERT INTO user_key_values (key, value, user_agent, ip_address) VALUES (?, ?, ?, ?)')
-				.bind(key, value, userAgent, ipAddr)
-				.run();
+
+			// 'INSERT INTO user_key_values (key, value, user_agent, ip_address) VALUES (?, ?, ?, ?)'
+			// вставить значения если их нет, иначе обновить
+			const query =
+				'INSERT INTO user_key_values (key, value, user_agent, ip_address) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value), user_agent = VALUES(user_agent), ip_address = VALUES(ip_address)';
+
+			await env.DB.prepare(query).bind(key, value, userAgent, ipAddr).run();
 			return new Response('OK');
 		}
 
 		if (url.pathname.startsWith(keyValuePath) && request.method === 'GET') {
-			const key = url.pathname.slice(5).trim();
+			const key = url.pathname.slice(keyValuePath.length).trim();
 			if (!key) {
 				return new Response('No key provided', { status: 400 });
 			}
