@@ -67,6 +67,11 @@ export default {
 				headers: { 'content-type': 'text/plain' },
 			});
 		}
+
+		if (url.pathname === '/ping') {
+			return new Response('Pong', { headers: { 'content-type': 'text/plain' } });
+		}
+
 		return new Response('Not Found', { status: 404 });
 	},
 } satisfies ExportedHandler<Env>;
