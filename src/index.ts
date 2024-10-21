@@ -7,9 +7,9 @@ export interface Env {
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const url = new URL(request.url);
+		const keyValuePath = '/key-value';
 
-		// set: /set/:key, value in body
-		if (url.pathname.startsWith('/set/')) {
+		if (url.pathname.startsWith(keyValuePath) && request.method === 'POST') {
 			const key = url.pathname.slice(5).trim();
 			const value = await request.text();
 			if (!value) {
@@ -28,8 +28,7 @@ export default {
 			return new Response('OK');
 		}
 
-		// get: /get/:key
-		if (url.pathname.startsWith('/get/')) {
+		if (url.pathname.startsWith(keyValuePath) && request.method === 'GET') {
 			const key = url.pathname.slice(5).trim();
 			if (!key) {
 				return new Response('No key provided', { status: 400 });
@@ -38,7 +37,12 @@ export default {
 			if (!row) {
 				return new Response('Not Found', { status: 404 });
 			}
-			return new Response(String(row.value), { headers: { 'content-type': 'text/plain' } });
+			return new Response(String(row.value), {
+				headers: {
+					'content-type': 'text/plain',
+					encoding: 'utf-8',
+				},
+			});
 		}
 
 		if (url.pathname === '/my-address') {
