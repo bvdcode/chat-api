@@ -11,19 +11,21 @@ export default {
 		const valueSizeLimit = 2 * 1024 * 1024; // 2 MB
 
 		const allowedOrigins = ['http://localhost:3000', 'https://diary.belov.us'];
+		if (!request.headers.has('Origin') || !request.headers.has('User-Agent') || !request.headers.has('CF-Connecting-IP')) {
+			return new Response('Bad request', { status: 400 });
+		}
+		const origin = request.headers.get('Origin');
+		if (!origin || !allowedOrigins.includes(origin)) {
+			return new Response('Not allowed', { status: 403 });
+		}
+		const corsHeaders = {
+			'Access-Control-Allow-Origin': origin,
+			'Access-Control-Allow-Methods': 'GET, POST',
+			'Access-Control-Allow-Headers': 'Content-Type',
+		};
 
 		if (request.method === 'OPTIONS' && request.headers.has('Origin')) {
-			const origin = request.headers.get('Origin');
-			if (origin && allowedOrigins.includes(origin)) {
-				const corsHeaders = {
-					'Access-Control-Allow-Origin': origin,
-					'Access-Control-Allow-Methods': 'GET, POST',
-					'Access-Control-Allow-Headers': 'Content-Type',
-				};
-				return new Response(null, { headers: corsHeaders });
-			} else {
-				return new Response('Not allowed', { status: 403 });
-			}
+			return new Response('OK', { headers: corsHeaders });
 		}
 
 		if (url.pathname.startsWith(keyValuePath) && request.method === 'POST') {
