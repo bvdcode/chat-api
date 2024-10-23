@@ -10,7 +10,7 @@ export default {
 		const keyValuePath = '/key-value/';
 		const valueSizeLimit = 2 * 1024 * 1024; // 2 MB
 
-		const allowedOrigins = ['http://localhost:3000', 'https://diary.belov.us'];
+		const allowedOrigins = ['http://localhost:5173', 'https://diary.belov.us'];
 		if (!request.headers.has('Origin') || !request.headers.has('User-Agent') || !request.headers.has('CF-Connecting-IP')) {
 			return new Response('Bad request', { status: 400 });
 		}
