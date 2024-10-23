@@ -57,7 +57,7 @@ export default {
 			const query = 'INSERT OR REPLACE INTO user_key_values (key, value, user_agent, ip_address) VALUES (?, ?, ?, ?)';
 
 			await env.DB.prepare(query).bind(key, value, userAgent, ipAddr).run();
-			return new Response('OK');
+			return new Response('OK', { headers: corsHeaders });
 		}
 
 		if (url.pathname.startsWith(keyValuePath) && request.method === 'GET') {
@@ -66,16 +66,16 @@ export default {
 				return new Response('No key provided', { status: 400 });
 			}
 			const row = await env.DB.prepare('SELECT value, created_at FROM user_key_values WHERE key = ?').bind(key).first();
-			if (!row) {
-				return new Response('Not Found', { status: 404 });
-			}
+			const result = row ? String(row.value) : 'Not found';
+			const createdAt = row ? new Date(row.created_at as string) : new Date();
 
 			// got value and created_at, return value and add created_at to response headers
-			return new Response(String(row.value), {
+			return new Response(String(result), {
 				headers: {
 					'Content-Type': 'text/plain; charset=utf-8',
-					'Last-Modified': new Date(row.created_at as string).toUTCString(),
-					'X-Created-At': new Date(row.created_at as string).toISOString(),
+					'Last-Modified': createdAt.toUTCString(),
+					'X-Created-At': createdAt.toISOString(),
+					...corsHeaders,
 				},
 			});
 		}
