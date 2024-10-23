@@ -10,13 +10,20 @@ export default {
 		const keyValuePath = '/key-value/';
 		const valueSizeLimit = 2 * 1024 * 1024; // 2 MB
 
-		if (request.method === 'OPTIONS') {
-			const corsHeaders = {
-				'Access-Control-Allow-Origin': '*',
-				'Access-Control-Allow-Methods': 'GET, POST',
-				'Access-Control-Allow-Headers': 'Content-Type',
-			};
-			return new Response(null, { headers: corsHeaders });
+		const allowedOrigins = ['http://localhost:3000', 'https://diary.belov.us'];
+
+		if (request.method === 'OPTIONS' && request.headers.has('Origin')) {
+			const origin = request.headers.get('Origin');
+			if (origin && allowedOrigins.includes(origin)) {
+				const corsHeaders = {
+					'Access-Control-Allow-Origin': origin,
+					'Access-Control-Allow-Methods': 'GET, POST',
+					'Access-Control-Allow-Headers': 'Content-Type',
+				};
+				return new Response(null, { headers: corsHeaders });
+			} else {
+				return new Response('Not allowed', { status: 403 });
+			}
 		}
 
 		if (url.pathname.startsWith(keyValuePath) && request.method === 'POST') {
